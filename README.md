@@ -7,8 +7,7 @@
            return;
        }
 ```
-Since we can't derefernece another process memory directly, we need to read the peb onto our local copy on our memory space
-
+Since we can directly access the target process's memory we need to read the data externally with RPM
 
 ```cpp
  
@@ -26,9 +25,8 @@ We repeat the same process for the LDR located within the PEB
         uintptr_t current_remote = reinterpret_cast<uintptr_t>(ldr_local.InLoadOrderModuleList.Flink);
 ```
 
-*head_remote* is the address of PEB_LDR_DATA we plus the offset InLoadOrderModuleList so we can start iteration here not at the start of the structure 
-*current_remote* this holds the address of the current entry but we can't do anything since it isnt in our process yet
-
+*head_remote* is the base address of PEB_LDR_DATA we use an caculation so we can get the start of the iteration ( the linked list ) we're querying from, current_address holds the address of a LINK_ENTRY* entry
+*current_address*  holds the address of a LINK_ENTRY* entry
 ```cpp
             uintptr_t remote_entry_addr = current_remote - offsetof(LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
 ```
